@@ -1,7 +1,5 @@
 package br.com.bb9leko.apigestaoinvest.rest;
 
-import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
-import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;

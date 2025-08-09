@@ -1,0 +1,11 @@
+services:
+  postgres_cadastro:
+    container_name: postgres_transacoes
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
