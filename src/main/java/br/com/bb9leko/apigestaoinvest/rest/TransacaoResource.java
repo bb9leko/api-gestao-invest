@@ -27,6 +27,16 @@ public class TransacaoResource {
                 .collect(Collectors.toList());
     }
 
+    @GET
+    @Path("/buscarPorTicket")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<TransacaoDTO> buscarPorTicket(@QueryParam("q") String ticket) {
+        return transacaoRepository.find("ticket", ticket)
+                .stream()
+                .map(TransacaoDTO::new)
+                .collect(Collectors.toList());
+    }
+
     @POST
     @Path("/insereTransacao")
     @Produces(MediaType.APPLICATION_JSON)
