@@ -1,5 +1,7 @@
 package br.com.bb9leko.apigestaoinvest.rest;
 
+import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
+import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
@@ -48,5 +50,62 @@ public class TransacaoResource {
         transacaoRepository.persist(transacao);
         return Response.ok().build();
     }
+
+    @DELETE
+    @Path("/excluirTransacao/{id}")
+    @Transactional
+    public Response excluirTransacao(@PathParam("id") Long id) {
+        Transacao transacao = transacaoRepository.findById(id);
+        if (transacao == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        transacaoRepository.delete(transacao);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/buscarTransacaoPorId/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response buscarTransacaoPorId(@PathParam("id") Long id) {
+        Transacao transacao = transacaoRepository.findById(id);
+        if (transacao == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        TransacaoDTO dto = new TransacaoDTO(transacao);
+        return Response.ok(dto).build();
+    }
+
+    @PUT
+    @Path("/atualizarTransacao/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response atualizarTransacao(@PathParam("id") Long id, TransacaoDTO dto) {
+        Transacao transacao = transacaoRepository.findById(id);
+        if (transacao == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+            transacao.setDataEvento(dto.getDataEvento());
+            transacao.setCorretora(dto.getCorretora());
+            transacao.setClassificacaoAtivo(ClassificacaoAtivo.valueOf(dto.getClassificacaoAtivo()));
+            transacao.setTicket(dto.getTicket());
+            transacao.setCompraOUVenda(Evento.valueOf(dto.getCompraOUVenda()));
+            transacao.setQuantidade(dto.getQuantidade());
+            transacao.setValorUnitario(dto.getValorUnitario());
+            transacao.setValorTotal(dto.getValorTotal());
+            transacao.setValorTaxaLiquidacao(dto.getValorTaxaLiquidacao());
+            transacao.setValorTaxasEmolumentos(dto.getValorTaxasEmolumentos());
+            transacao.setValorImpostos(dto.getValorImpostos());
+            transacao.setOutrosValoresCobrados(dto.getOutrosValoresCobrados());
+            transacao.setValorCorretagem(dto.getValorCorretagem());
+            transacao.setValorTotalComCustosEDespesas(dto.getValorTotalComCustosEDespesas());
+
+            transacaoRepository.persist(transacao);
+            TransacaoDTO dtoAtualizado = new TransacaoDTO(transacao);
+
+            return Response.ok(dtoAtualizado).build();
+    }
+
 
 }

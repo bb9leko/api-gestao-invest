@@ -3,11 +3,16 @@ package br.com.bb9leko.apigestaoinvest.dto;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.json.bind.annotation.JsonbDateFormat;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TransacaoDTO {
+
+    @Schema(hidden = true)
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("dataEvento")
     @JsonbDateFormat("dd/MM/yyyy")
@@ -31,6 +36,7 @@ public class TransacaoDTO {
     @JsonProperty("valorUnitario")
     private BigDecimal valorUnitario;
 
+    @Schema(hidden = true)
     @JsonProperty("valorTotal")
     private BigDecimal valorTotal;
 
@@ -49,10 +55,12 @@ public class TransacaoDTO {
     @JsonProperty("valorCorretagem")
     private BigDecimal valorCorretagem;
 
+    @Schema(hidden = true)
     @JsonProperty("valorTotalComCustosEDespesas")
     private BigDecimal valorTotalComCustosEDespesas;
 
     public TransacaoDTO(Transacao transacao) {
+        this.id = transacao.getId();
         this.dataEvento = transacao.getDataEvento();
         this.corretora = transacao.getCorretora();
         this.classificacaoAtivo = transacao.getClassificacaoAtivo().name();
@@ -73,6 +81,15 @@ public class TransacaoDTO {
     public TransacaoDTO() {
         // Default constructor
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDate getDataEvento() {
         return dataEvento;
     }
