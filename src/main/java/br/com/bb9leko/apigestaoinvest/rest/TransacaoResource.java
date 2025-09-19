@@ -76,7 +76,7 @@ public class TransacaoResource {
     }
 
     @PUT
-    @Path("/atualizarTransacao/{id}")
+    @Path("/editarTransacao/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
