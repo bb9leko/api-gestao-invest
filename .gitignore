@@ -43,3 +43,7 @@ nb-configuration.xml
 /.quarkus/cli/plugins/
 # TLS Certificates
 .certs/
+
+# Ignorar diretórios de dados locais
+data/
+data_dividendos/

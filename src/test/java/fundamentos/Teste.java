@@ -1,14 +1,31 @@
 package fundamentos;
 
+import java.io.Console;
+
 public class Teste {
     public static void main(String[] args) {
-        int[] values = {10, 30, 50};
-        for (var val : values) {
-            var x = 0;
-            while (x < values.length) {
-                System.out.println(x + " " + val);
-                x++;
-            }
-        }
+
+        // Linha 1
+        int resultado;
+
+        // Linha 2
+        int a = 5;
+
+        // Linha 3 (Chamada de Função)
+        resultado = Soma(a, 10); // A função Soma(x, y) apenas retorna x + y
+
+        // Linha 4
+        WriteLine(resultado);
+
+
     }
+
+    private static int Soma(int a, int i) {
+        return a + i;
+    }
+
+    private static void WriteLine(Object obj) {
+        System.out.println(obj);
+    }
+
 }
