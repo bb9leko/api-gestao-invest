@@ -1,5 +1,7 @@
 package br.com.bb9leko.apigestaoinvest.rest;
 
+import br.com.bb9leko.apigestaoinvest.dto.Evento;
+import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
 import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
@@ -10,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +32,11 @@ class TransacaoResourceUnitTest {
     void listarTransacoes_deveRetornarListaDTO() {
         Transacao t = new Transacao();
         t.setTicket("TICK1");
+        t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
+        t.setCompraOUVenda(Evento.values()[0]);
+        t.setValorUnitario(new BigDecimal("10"));
+        t.setQuantidade(2);
+
         doReturn(Collections.singletonList(t)).when(mockRepository).listAll();
 
         var result = resource.listarTransacoes();
@@ -46,14 +53,22 @@ class TransacaoResourceUnitTest {
         String ticket = "ABC";
         Transacao t = new Transacao();
         t.setTicket(ticket);
-        doReturn(Collections.singletonList(t)).when(mockRepository).find("ticket", ticket);
+        t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
+        t.setCompraOUVenda(Evento.values()[0]);
+        t.setValorUnitario(new BigDecimal("5"));
+        t.setQuantidade(3);
+
+        // stub exato da assinatura usada pela implementação: list("ticket", ticket)
+        when(mockRepository.list("ticket", ticket)).thenReturn(Collections.singletonList(t));
 
         var result = resource.buscarPorTicket(ticket);
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(ticket, result.get(0).getTicket());
-        verify(mockRepository, times(1)).find("ticket", ticket);
+
+        // garantir que a lista foi consultada
+        verify(mockRepository, times(1)).list("ticket", ticket);
     }
 
     @Test
@@ -61,6 +76,10 @@ class TransacaoResourceUnitTest {
         Long id = 10L;
         Transacao t = new Transacao();
         t.setTicket("XYZ");
+        t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
+        t.setCompraOUVenda(Evento.values()[0]);
+        t.setValorUnitario(new BigDecimal("7.5"));
+        t.setQuantidade(4);
         when(mockRepository.findById(id)).thenReturn(t);
 
         Response resp = resource.buscarTransacaoPorId(id);
@@ -88,6 +107,10 @@ class TransacaoResourceUnitTest {
     void excluirTransacao_quandoExistir_deveDeletarERetornar204() {
         Long id = 5L;
         Transacao t = new Transacao();
+        t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
+        t.setCompraOUVenda(Evento.values()[0]);
+        t.setValorUnitario(new BigDecimal("1"));
+        t.setQuantidade(1);
         when(mockRepository.findById(id)).thenReturn(t);
 
         Response resp = resource.excluirTransacao(id);

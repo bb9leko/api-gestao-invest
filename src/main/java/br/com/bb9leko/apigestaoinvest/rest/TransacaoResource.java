@@ -33,7 +33,7 @@ public class TransacaoResource {
     @Path("/buscarPorTicket")
     @Produces(MediaType.APPLICATION_JSON)
     public List<TransacaoDTO> buscarPorTicket(@QueryParam("q") String ticket) {
-        return transacaoRepository.find("ticket", ticket)
+        return transacaoRepository.list("ticket", ticket)
                 .stream()
                 .map(TransacaoDTO::new)
                 .collect(Collectors.toList());
