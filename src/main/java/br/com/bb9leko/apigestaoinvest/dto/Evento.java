@@ -2,7 +2,10 @@ package br.com.bb9leko.apigestaoinvest.dto;
 
 public enum Evento {
     COMPRA("compra"),
-    VENDA("venda");
+    VENDA("venda"),
+    BONIFICACAO("bonificacao"),
+    DESDOBRAMENTO("desdobramento"),
+    CONVERSAO("conversao"),;
 
     private final String descricao;
 

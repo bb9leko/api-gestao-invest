@@ -3,6 +3,7 @@ package br.com.bb9leko.apigestaoinvest.rest;
 import br.com.bb9leko.apigestaoinvest.dto.AtivoConsolidadoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
+import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -37,7 +38,7 @@ public class RelatorioResource {
                 .collect(Collectors.toList());
 
         // Ordena por valor total (decrescente)
-        ativos.sort(Comparator.comparing(a -> a.valorMedio.multiply(BigDecimal.valueOf(a.quantidadeTotal)), Comparator.reverseOrder()));
+        ativos.sort(Comparator.comparing(a -> a.valorMedio.multiply(a.quantidadeTotal), Comparator.reverseOrder()));
 
         return ativos;
     }
@@ -52,30 +53,34 @@ public class RelatorioResource {
         // Ordena por data para consistência (data antiga primeiro)
         transacoes.sort(Comparator.comparing(Transacao::getDataEvento));
 
-        int saldo = 0;
-        int totalCompras = 0;
+        BigDecimal saldo = BigDecimal.ZERO;
+        BigDecimal totalCompras = BigDecimal.ZERO;
         BigDecimal somaValorUnitario = BigDecimal.ZERO;
         BigDecimal valorTotalCompras = BigDecimal.ZERO;
 
         for (Transacao t : transacoes) {
-            String tipo = t.getCompraOUVenda() != null ? t.getCompraOUVenda().name() : "";
-            if ("COMPRA".equals(tipo)) {
-                saldo += t.getQuantidade();
-                somaValorUnitario = somaValorUnitario.add(t.getValorUnitario().multiply(BigDecimal.valueOf(t.getQuantidade())));
-                totalCompras += t.getQuantidade();
+            Evento evento = t.getCompraOUVenda();
+            BigDecimal qtd = t.getQuantidade() != null ? t.getQuantidade() : BigDecimal.ZERO;
+            BigDecimal valorUnit = nullToZero(t.getValorUnitario());
+            // Se for COMPRA ou BONIFICACAO somamos ao saldo e contabilizamos custos
+            if (evento == Evento.COMPRA || evento == Evento.BONIFICACAO || evento == Evento.DESDOBRAMENTO
+            || evento == Evento.CONVERSAO) {
+                saldo = saldo.add(qtd);
+                somaValorUnitario = somaValorUnitario.add(valorUnit.multiply(qtd));
+                totalCompras = totalCompras.add(qtd);
                 valorTotalCompras = valorTotalCompras
-                        .add(t.getValorUnitario().multiply(BigDecimal.valueOf(t.getQuantidade())))
+                        .add(valorUnit.multiply(qtd))
                         .add(nullToZero(t.getValorTaxaLiquidacao()))
                         .add(nullToZero(t.getValorTaxasEmolumentos()))
                         .add(nullToZero(t.getValorImpostos()))
                         .add(nullToZero(t.getValorCorretagem()))
                         .add(nullToZero(t.getOutrosValoresCobrados()));
-            } else if ("VENDA".equals(tipo)) {
-                saldo -= t.getQuantidade();
+            } else if (evento == Evento.VENDA) {
+                saldo = saldo.subtract(qtd);
             }
         }
 
-        if (saldo <= 0) return null;
+        if (saldo.compareTo(BigDecimal.ZERO) <= 0) return null;
 
         Transacao primeiro = transacoes.get(0);
         AtivoConsolidadoDTO dto = new AtivoConsolidadoDTO();
@@ -83,8 +88,8 @@ public class RelatorioResource {
         dto.classificacaoAtivo = primeiro.getClassificacaoAtivo() != null ? primeiro.getClassificacaoAtivo().name() : null;
         dto.ticket = primeiro.getTicket();
         dto.quantidadeTotal = saldo;
-        dto.valorMedio = totalCompras > 0
-                ? somaValorUnitario.divide(BigDecimal.valueOf(totalCompras), 2, RoundingMode.HALF_UP)
+        dto.valorMedio = totalCompras.compareTo(BigDecimal.ZERO) > 0
+                ? somaValorUnitario.divide(totalCompras, 2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
         dto.valorTotalCompras = valorTotalCompras;
         return dto;

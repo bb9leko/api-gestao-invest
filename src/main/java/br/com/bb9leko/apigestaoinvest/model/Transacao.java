@@ -22,6 +22,7 @@ public class Transacao {
     private String corretora;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "classificacaoativo")
     private ClassificacaoAtivo classificacaoAtivo;
 
     private String ticket;
@@ -29,12 +30,15 @@ public class Transacao {
     @Enumerated(EnumType.STRING)
     private Evento compraOUVenda;
 
-    private int quantidade;
+    @Column(precision = 38, scale = 2)
+    private BigDecimal quantidade;
 
     private BigDecimal valorUnitario;
 
+    @Column(precision = 38, scale = 2)
     private BigDecimal valorTotal;
 
+    @Column(precision = 38, scale = 2)
     private BigDecimal valorTaxaLiquidacao;
 
     private BigDecimal valorTaxasEmolumentos;
@@ -115,11 +119,11 @@ public class Transacao {
         this.compraOUVenda = compraOUVenda;
     }
 
-    public int getQuantidade() {
+    public BigDecimal getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(BigDecimal quantidade) {
         this.quantidade = quantidade;
     }
 
@@ -132,7 +136,7 @@ public class Transacao {
     }
 
     public BigDecimal getValorTotal() {
-        return this.valorUnitario.multiply(BigDecimal.valueOf(this.quantidade));
+        return this.valorUnitario.multiply(this.quantidade);
     }
 
     public void setValorTotal(BigDecimal valorTotal) {
@@ -180,7 +184,7 @@ public class Transacao {
     }
 
     public BigDecimal getValorTotalComCustosEDespesas() {
-        return this.valorTotalComCustosEDespesas = this.valorUnitario.multiply(BigDecimal.valueOf(this.quantidade))
+        return this.valorTotalComCustosEDespesas = this.valorUnitario.multiply(this.quantidade)
                 .add(this.valorTaxaLiquidacao != null ? this.valorTaxaLiquidacao : BigDecimal.ZERO)
                 .add(this.valorTaxasEmolumentos != null ? this.valorTaxasEmolumentos : BigDecimal.ZERO)
                 .add(this.valorImpostos != null ? this.valorImpostos : BigDecimal.ZERO)
@@ -195,7 +199,7 @@ public class Transacao {
     @PrePersist
     @PreUpdate
     private void calcularValorTotalComCustosEDespesas() {
-        this.valorTotal = this.valorUnitario.multiply(BigDecimal.valueOf(this.quantidade));
+        this.valorTotal = this.valorUnitario.multiply(this.quantidade);
 
         BigDecimal total = this.valorTotal
                 .add(this.valorTaxaLiquidacao != null ? this.valorTaxaLiquidacao : BigDecimal.ZERO)

@@ -6,7 +6,7 @@ public class AtivoConsolidadoDTO {
     public String corretora;
     public String classificacaoAtivo;
     public String ticket;
-    public int quantidadeTotal;
+    public BigDecimal quantidadeTotal;
     public BigDecimal valorMedio;
     public BigDecimal valorTotalCompras;
     public BigDecimal valorTotalTaxaLiquidacao;

@@ -35,7 +35,7 @@ class TransacaoResourceUnitTest {
         t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
         t.setCompraOUVenda(Evento.values()[0]);
         t.setValorUnitario(new BigDecimal("10"));
-        t.setQuantidade(2);
+        t.setQuantidade(BigDecimal.valueOf(2));
 
         doReturn(Collections.singletonList(t)).when(mockRepository).listAll();
 
@@ -56,7 +56,7 @@ class TransacaoResourceUnitTest {
         t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
         t.setCompraOUVenda(Evento.values()[0]);
         t.setValorUnitario(new BigDecimal("5"));
-        t.setQuantidade(3);
+        t.setQuantidade(BigDecimal.valueOf(3));
 
         // stub exato da assinatura usada pela implementação: list("ticket", ticket)
         when(mockRepository.list("ticket", ticket)).thenReturn(Collections.singletonList(t));
@@ -79,7 +79,7 @@ class TransacaoResourceUnitTest {
         t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
         t.setCompraOUVenda(Evento.values()[0]);
         t.setValorUnitario(new BigDecimal("7.5"));
-        t.setQuantidade(4);
+        t.setQuantidade(BigDecimal.valueOf(4));
         when(mockRepository.findById(id)).thenReturn(t);
 
         Response resp = resource.buscarTransacaoPorId(id);
@@ -110,7 +110,7 @@ class TransacaoResourceUnitTest {
         t.setClassificacaoAtivo(ClassificacaoAtivo.values()[0]);
         t.setCompraOUVenda(Evento.values()[0]);
         t.setValorUnitario(new BigDecimal("1"));
-        t.setQuantidade(1);
+        t.setQuantidade(BigDecimal.valueOf(1));
         when(mockRepository.findById(id)).thenReturn(t);
 
         Response resp = resource.excluirTransacao(id);

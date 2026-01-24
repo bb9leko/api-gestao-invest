@@ -31,7 +31,7 @@ public class TransacaoDTO {
     private String compraOUVenda;
 
     @JsonProperty("quantidade")
-    private int quantidade;
+    private BigDecimal quantidade;
 
     @JsonProperty("valorUnitario")
     private BigDecimal valorUnitario;
@@ -130,11 +130,11 @@ public class TransacaoDTO {
         this.compraOUVenda = compraOUVenda;
     }
 
-    public int getQuantidade() {
+    public BigDecimal getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(BigDecimal quantidade) {
         this.quantidade = quantidade;
     }
 

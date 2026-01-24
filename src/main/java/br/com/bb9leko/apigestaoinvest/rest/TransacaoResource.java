@@ -45,6 +45,7 @@ public class TransacaoResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response insereTransacao(TransacaoDTO dto) {
+
         Transacao transacao = new Transacao(dto);
         // valorTotal e valorTotalComTaxasEDespesas será calculado automaticamente pelo metodo @PrePersist/@PreUpdate
         transacaoRepository.persist(transacao);
