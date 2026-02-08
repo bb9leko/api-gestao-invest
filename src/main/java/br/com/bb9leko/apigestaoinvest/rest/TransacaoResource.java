@@ -5,7 +5,12 @@ import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
+import io.quarkus.logging.Log;
+import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -20,6 +25,11 @@ public class TransacaoResource {
     @Inject
     TransacaoRepository transacaoRepository;
 
+    @Inject
+    EventBus bus;
+
+    private final Jsonb jsonb = JsonbBuilder.create();
+
     @GET
     @Path("/listaTransacoes")
     public List<TransacaoDTO> listarTransacoes() {
@@ -32,11 +42,19 @@ public class TransacaoResource {
     @GET
     @Path("/buscarPorTicket")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<TransacaoDTO> buscarPorTicket(@QueryParam("q") String ticket) {
-        return transacaoRepository.list("ticket", ticket)
+    public Response buscarPorTicket(@QueryParam("q") String ticket) {
+        Log.info("Recebida requisição.");
+        try {
+            Thread.sleep(10_000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Interrupted").build();
+        }
+        List<TransacaoDTO> lista = transacaoRepository.list("ticket", ticket)
                 .stream()
                 .map(TransacaoDTO::new)
                 .collect(Collectors.toList());
+        return Response.ok(lista).build();
     }
 
     @POST
@@ -45,7 +63,6 @@ public class TransacaoResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response insereTransacao(TransacaoDTO dto) {
-
         Transacao transacao = new Transacao(dto);
         // valorTotal e valorTotalComTaxasEDespesas será calculado automaticamente pelo metodo @PrePersist/@PreUpdate
         transacaoRepository.persist(transacao);
