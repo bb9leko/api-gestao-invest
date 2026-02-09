@@ -1,7 +1,7 @@
 package br.com.bb9leko.apigestaoinvest.rest;
 
-import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
+import br.com.bb9leko.apigestaoinvest.dto.Evento;
 import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
 import br.com.bb9leko.apigestaoinvest.model.Transacao;
 import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,7 +28,6 @@ class TransacaoResourceUnitTest {
     @InjectMocks
     TransacaoResource resource;
 
-    @SuppressWarnings("unchecked")
     @Test
     void listarTransacoes_deveRetornarListaDTO() {
         Transacao t = new Transacao();
@@ -39,7 +39,7 @@ class TransacaoResourceUnitTest {
 
         doReturn(Collections.singletonList(t)).when(mockRepository).listAll();
 
-        var result = resource.listarTransacoes();
+        List<TransacaoDTO> result = resource.listarTransacoes();
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -58,16 +58,18 @@ class TransacaoResourceUnitTest {
         t.setValorUnitario(new BigDecimal("5"));
         t.setQuantidade(BigDecimal.valueOf(3));
 
-        // stub exato da assinatura usada pela implementação: list("ticket", ticket)
         when(mockRepository.list("ticket", ticket)).thenReturn(Collections.singletonList(t));
 
-        var result = resource.buscarPorTicket(ticket);
+        Response resp = resource.buscarPorTicket(ticket);
 
+        assertNotNull(resp);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        List<TransacaoDTO> result = (List<TransacaoDTO>) resp.getEntity();
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(ticket, result.get(0).getTicket());
 
-        // garantir que a lista foi consultada
         verify(mockRepository, times(1)).list("ticket", ticket);
     }
 
