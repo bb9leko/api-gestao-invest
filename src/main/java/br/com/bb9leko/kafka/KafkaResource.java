@@ -17,7 +17,7 @@ public class KafkaResource {
     @Path("/enviar")
     public Response enviar(@QueryParam("msg") String mensagem) {
         producer.enviar(mensagem);
-        Log.infof(">>> Mensagem enviada do Kafka: %s", mensagem);
+        Log.infof(">>> Resource -> Mensagem enviada do Kafka: %s", mensagem);
         return Response.ok("Mensagem enviada: " + mensagem).build();
     }
 }
