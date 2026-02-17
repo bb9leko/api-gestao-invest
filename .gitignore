@@ -47,3 +47,8 @@ nb-configuration.xml
 # Ignorar diretórios de dados locais
 data/
 data_dividendos/
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
