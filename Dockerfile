@@ -1,17 +1,15 @@
 # Build stage
-FROM eclipse-temurin:23-jdk-alpine AS build
+FROM maven:3.9.9-eclipse-temurin-23-alpine AS build
 
 WORKDIR /app
 
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
 
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 COPY src ./src
 
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # Runtime stage
 FROM eclipse-temurin:23-jre-alpine
@@ -28,4 +26,3 @@ EXPOSE 8080
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0"
 
 CMD ["sh", "-c", "java $JAVA_OPTS -jar quarkus-run.jar"]
-
