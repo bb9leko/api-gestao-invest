@@ -1,5 +1,12 @@
-*
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+target/
+.git/
+.github/
+.idea/
+.mvn/
+*.md
+data/
+data_dividendos/
+.env
+*.iml
+mvnw
+mvnw.cmd
