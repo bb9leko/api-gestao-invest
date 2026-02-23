@@ -27,6 +27,7 @@ public class RelatorioResource {
      */
     @GET
     @Path("/consolidados")
+    @Produces(MediaType.APPLICATION_JSON)
     public List<AtivoConsolidadoDTO> listarAtivosAgrupados() {
         // Agrupa por classificacao|corretora|ticket para consolidar posições por ativo
         Map<String, List<Transacao>> agrupados = transacaoRepository.listAll().stream()
