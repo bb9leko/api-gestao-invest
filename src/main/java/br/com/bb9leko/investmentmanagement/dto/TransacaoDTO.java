@@ -1,12 +1,14 @@
-package br.com.bb9leko.apigestaoinvest.dto;
-
-import br.com.bb9leko.apigestaoinvest.model.Transacao;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.json.bind.annotation.JsonbDateFormat;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+package br.com.bb9leko.investmentmanagement.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import br.com.bb9leko.investmentmanagement.model.Transacao;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 
 public class TransacaoDTO {
 

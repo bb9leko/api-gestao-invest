@@ -1,4 +1,4 @@
-package br.com.bb9leko.apigestaoinvest.dto;
+package br.com.bb9leko.investmentmanagement.dto;
 
 import java.math.BigDecimal;
 
@@ -9,9 +9,4 @@ public class AtivoConsolidadoDTO {
     public BigDecimal quantidadeTotal;
     public BigDecimal valorMedio;
     public BigDecimal valorTotalCompras;
-    public BigDecimal valorTotalTaxaLiquidacao;
-    public BigDecimal valorTotalTaxasEmolumentos;
-    public BigDecimal valorTotalImpostos;
-    public BigDecimal valorTotalCorretagem;
-    public BigDecimal valorTotalOutros;
 }

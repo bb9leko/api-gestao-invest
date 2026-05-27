@@ -1,13 +1,10 @@
-package br.com.bb9leko.apigestaoinvest.rest;
+package br.com.bb9leko.investmentmanagement.rest;
 
-import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
-import br.com.bb9leko.apigestaoinvest.dto.Evento;
-import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
-import br.com.bb9leko.apigestaoinvest.model.Transacao;
-import br.com.bb9leko.apigestaoinvest.repository.TransacaoRepository;
+import br.com.bb9leko.investmentmanagement.dto.TransacaoDTO;
+import br.com.bb9leko.investmentmanagement.model.Transacao;
+import br.com.bb9leko.investmentmanagement.repository.TransacaoRepository;
 import io.quarkus.logging.Log;
 import io.vertx.mutiny.core.eventbus.EventBus;
-import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -43,7 +40,7 @@ public class TransacaoResource {
     @Path("/buscarPorTicket")
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorTicket(@QueryParam("q") String ticket) {
-        Log.info("Recebida requisição.");
+        Log.info("Requisição Recebida.");
         try {
             Thread.sleep(10_000);
         } catch (InterruptedException e) {
@@ -64,7 +61,6 @@ public class TransacaoResource {
     @Transactional
     public Response insereTransacao(TransacaoDTO dto) {
         Transacao transacao = new Transacao(dto);
-        // valorTotal e valorTotalComTaxasEDespesas será calculado automaticamente pelo metodo @PrePersist/@PreUpdate
         transacaoRepository.persist(transacao);
         return Response.ok().build();
     }
@@ -103,26 +99,9 @@ public class TransacaoResource {
         if (transacao == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-
-            transacao.setDataEvento(dto.getDataEvento());
-            transacao.setCorretora(dto.getCorretora());
-            transacao.setClassificacaoAtivo(ClassificacaoAtivo.valueOf(dto.getClassificacaoAtivo()));
-            transacao.setTicket(dto.getTicket());
-            transacao.setCompraOUVenda(Evento.valueOf(dto.getCompraOUVenda()));
-            transacao.setQuantidade(dto.getQuantidade());
-            transacao.setValorUnitario(dto.getValorUnitario());
-            transacao.setValorTotal(dto.getValorTotal());
-            transacao.setValorTaxaLiquidacao(dto.getValorTaxaLiquidacao());
-            transacao.setValorTaxasEmolumentos(dto.getValorTaxasEmolumentos());
-            transacao.setValorImpostos(dto.getValorImpostos());
-            transacao.setOutrosValoresCobrados(dto.getOutrosValoresCobrados());
-            transacao.setValorCorretagem(dto.getValorCorretagem());
-            transacao.setValorTotalComCustosEDespesas(dto.getValorTotalComCustosEDespesas());
-
-            transacaoRepository.persist(transacao);
-            TransacaoDTO dtoAtualizado = new TransacaoDTO(transacao);
-
-            return Response.ok(dtoAtualizado).build();
+        transacao.aplicar(dto);
+        transacaoRepository.persist(transacao);
+        return Response.ok(new TransacaoDTO(transacao)).build();
     }
 
 

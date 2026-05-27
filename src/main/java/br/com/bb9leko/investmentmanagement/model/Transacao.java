@@ -1,12 +1,22 @@
-package br.com.bb9leko.apigestaoinvest.model;
+package br.com.bb9leko.investmentmanagement.model;
 
-import br.com.bb9leko.apigestaoinvest.dto.Evento;
-import br.com.bb9leko.apigestaoinvest.dto.ClassificacaoAtivo;
-import br.com.bb9leko.apigestaoinvest.dto.TransacaoDTO;
-import jakarta.json.bind.annotation.JsonbDateFormat;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import br.com.bb9leko.investmentmanagement.dto.ClassificacaoAtivo;
+import br.com.bb9leko.investmentmanagement.dto.Evento;
+import br.com.bb9leko.investmentmanagement.dto.TransacaoDTO;
+import jakarta.json.bind.annotation.JsonbDateFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Transacoes")
@@ -47,12 +57,15 @@ public class Transacao {
 
     private BigDecimal outrosValoresCobrados;
 
-    //Ou Taxa Operacional
     private BigDecimal valorCorretagem;
 
     private BigDecimal valorTotalComCustosEDespesas;
 
     public Transacao(TransacaoDTO dto) {
+        aplicar(dto);
+    }
+
+    public void aplicar(TransacaoDTO dto) {
         this.dataEvento = dto.getDataEvento();
         this.corretora = dto.getCorretora();
         this.classificacaoAtivo = ClassificacaoAtivo.valueOf(dto.getClassificacaoAtivo());
@@ -65,7 +78,6 @@ public class Transacao {
         this.valorImpostos = dto.getValorImpostos();
         this.outrosValoresCobrados = dto.getOutrosValoresCobrados();
         this.valorCorretagem = dto.getValorCorretagem();
-        // Os valores calculados (valorTotal, etc.) serão tratados pelo @PrePersist
     }
 
     public Transacao() {
@@ -136,7 +148,7 @@ public class Transacao {
     }
 
     public BigDecimal getValorTotal() {
-        return this.valorUnitario.multiply(this.quantidade);
+        return valorTotal;
     }
 
     public void setValorTotal(BigDecimal valorTotal) {
@@ -184,31 +196,35 @@ public class Transacao {
     }
 
     public BigDecimal getValorTotalComCustosEDespesas() {
-        return this.valorTotalComCustosEDespesas = this.valorUnitario.multiply(this.quantidade)
-                .add(this.valorTaxaLiquidacao != null ? this.valorTaxaLiquidacao : BigDecimal.ZERO)
-                .add(this.valorTaxasEmolumentos != null ? this.valorTaxasEmolumentos : BigDecimal.ZERO)
-                .add(this.valorImpostos != null ? this.valorImpostos : BigDecimal.ZERO)
-                .add(this.outrosValoresCobrados != null ? this.outrosValoresCobrados : BigDecimal.ZERO)
-                .add(this.valorCorretagem != null ? this.valorCorretagem : BigDecimal.ZERO);
+        return valorTotalComCustosEDespesas;
     }
 
-    public void setValorTotalComCustosEDespesas(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
+    public void setValorTotalComCustosEDespesas(BigDecimal valorTotalComCustosEDespesas) {
+        this.valorTotalComCustosEDespesas = valorTotalComCustosEDespesas;
     }
 
     @PrePersist
     @PreUpdate
     private void calcularValorTotalComCustosEDespesas() {
-        this.valorTotal = this.valorUnitario.multiply(this.quantidade);
+        BigDecimal valorUnitarioCalculado = this.valorUnitario != null ? this.valorUnitario : BigDecimal.ZERO;
+        BigDecimal quantidadeCalculada = this.quantidade != null ? this.quantidade : BigDecimal.ZERO;
+        this.valorTotal = valorUnitarioCalculado.multiply(quantidadeCalculada);
 
-        BigDecimal total = this.valorTotal
+        if (this.compraOUVenda == Evento.VENDA) {
+            this.valorTotalComCustosEDespesas = this.valorTotal
+                .subtract(this.valorTaxaLiquidacao != null ? this.valorTaxaLiquidacao : BigDecimal.ZERO)
+                .subtract(this.valorTaxasEmolumentos != null ? this.valorTaxasEmolumentos : BigDecimal.ZERO)
+                .subtract(this.valorImpostos != null ? this.valorImpostos : BigDecimal.ZERO)
+                .subtract(this.outrosValoresCobrados != null ? this.outrosValoresCobrados : BigDecimal.ZERO)
+                .subtract(this.valorCorretagem != null ? this.valorCorretagem : BigDecimal.ZERO);
+        } else {
+            this.valorTotalComCustosEDespesas = this.valorTotal
                 .add(this.valorTaxaLiquidacao != null ? this.valorTaxaLiquidacao : BigDecimal.ZERO)
                 .add(this.valorTaxasEmolumentos != null ? this.valorTaxasEmolumentos : BigDecimal.ZERO)
                 .add(this.valorImpostos != null ? this.valorImpostos : BigDecimal.ZERO)
                 .add(this.outrosValoresCobrados != null ? this.outrosValoresCobrados : BigDecimal.ZERO)
                 .add(this.valorCorretagem != null ? this.valorCorretagem : BigDecimal.ZERO);
-
-        this.valorTotalComCustosEDespesas = total;
+        }        
     }
 
     @Override

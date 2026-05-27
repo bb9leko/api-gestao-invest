@@ -1,4 +1,4 @@
-package br.com.bb9leko.apigestaoinvest.dto;
+package br.com.bb9leko.investmentmanagement.dto;
 
 public enum ClassificacaoAtivo {
     FIIS("Fundos Imobiliários"),

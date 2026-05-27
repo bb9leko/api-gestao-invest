@@ -1,7 +1,7 @@
-package br.com.bb9leko.gestaodividendos.rest;
+package br.com.bb9leko.dividendmanagement.rest;
 
-import br.com.bb9leko.gestaodividendos.model.Dividendos;
-import br.com.bb9leko.gestaodividendos.repository.DividendosRepository;
+import br.com.bb9leko.dividendmanagement.model.Dividendos;
+import br.com.bb9leko.dividendmanagement.repository.DividendosRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;

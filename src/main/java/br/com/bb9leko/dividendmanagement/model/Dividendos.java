@@ -1,4 +1,4 @@
-package br.com.bb9leko.gestaodividendos.model;
+package br.com.bb9leko.dividendmanagement.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

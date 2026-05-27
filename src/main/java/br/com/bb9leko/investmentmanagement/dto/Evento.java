@@ -1,4 +1,4 @@
-package br.com.bb9leko.apigestaoinvest.dto;
+package br.com.bb9leko.investmentmanagement.dto;
 
 public enum Evento {
     COMPRA("compra"),
